@@ -1,5 +1,5 @@
 %define          atilibdir       %{_libdir}/fglrx
-%define          ativersion  8.10
+%define          ativersion  8.11beta
 
 # Tweak to have debuginfo - part 1/2
 %if 0%{?fedora} > 7
@@ -8,13 +8,14 @@
 %endif
 
 Name:            xorg-x11-drv-fglrx
-Version:         8.542
-Release:         1.%{ativersion}%{?dist}
+Version:         8.543
+Release:         0.1.%{ativersion}%{?dist}
 Summary:         AMD's proprietary driver for ATI graphic cards
 Group:           User Interface/X Hardware Support
 License:         BSD/Commercial/GPL/QPL
 URL:             http://www.ati.com/support/drivers/linux/radeon-linux.html
-Source0:         https://a248.e.akamai.net/f/674/9206/0/www2.ati.com/drivers/linux/ati-driver-installer-8-10-x86.x86_64.run
+#Source0:         https://a248.e.akamai.net/f/674/9206/0/www2.ati.com/drivers/linux/ati-driver-installer-8-10-x86.x86_64.run
+Source0:         http://archive.ubuntu.com/ubuntu/pool/multiverse/f/fglrx-installer/fglrx-installer_8.543.orig.tar.gz
 Source1:         fglrx-README.Fedora
 Source3:         fglrx-config-display
 Source4:         fglrx-init
@@ -98,7 +99,13 @@ This package provides the shared libraries for %{name}.
 
 %prep
 %setup -q -c -T
-sh %{SOURCE0} --extract fglrx
+#sh %{SOURCE0} --extract fglrx
+mkdir -p fglrx/common
+pushd fglrx
+tar xfz %{SOURCE0}
+mv etc lib opt usr common
+cp common/usr/share/doc/fglrx/ATI_LICENSE.TXT .
+popd
 
 tar -cjf fglrx-kmod-data-%{version}.tar.bz2 fglrx/ATI_LICENSE.TXT fglrx/common/*/modules/fglrx/ fglrx/arch/*/*/modules/fglrx/
 
@@ -110,11 +117,13 @@ sed -i -e 's|strict=true|strict=false|' find-debuginfo.sh
 
 mkdir fglrxpkg
 %ifarch %{ix86}
-cp -r fglrx/common/* fglrx/x710/* fglrx/arch/x86/* fglrxpkg/
+#cp -r fglrx/common/* fglrx/x710/* fglrx/arch/x86/* fglrxpkg/
+cp -r fglrx/common/* fglrx/x740/* fglrx/arch/x86/* fglrxpkg/
 %endif
 
 %ifarch x86_64
-cp -r fglrx/common/* fglrx/x710_64a/* fglrx/arch/x86_64/* fglrxpkg/
+#cp -r fglrx/common/* fglrx/x710_64a/* fglrx/arch/x86_64/* fglrxpkg/
+cp -r fglrx/common/* fglrx/x740_64a/* fglrx/arch/x86_64/* fglrxpkg/
 %endif
 
 # fix doc perms
@@ -297,6 +306,9 @@ fi ||:
 %{_includedir}/X11/extensions/*.h
 
 %changelog
+* Thu Oct 16 2008 Stewart Adam <s.adam at diffingo.com> - 8.543-0.1.8.11beta
+- Update to 8.11 beta (8.54.3)
+
 * Thu Oct 16 2008 Stewart Adam <s.adam at diffingo.com>	- 8.542-1.8.10
 - Update to 8.10
 
