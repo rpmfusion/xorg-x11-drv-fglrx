@@ -9,7 +9,7 @@
 
 Name:            xorg-x11-drv-fglrx
 Version:         8.542
-Release:         2.%{ativersion}%{?dist}
+Release:         3.%{ativersion}%{?dist}
 Summary:         AMD's proprietary driver for ATI graphic cards
 Group:           User Interface/X Hardware Support
 License:         BSD/Commercial/GPL/QPL
@@ -75,7 +75,7 @@ for release %{version}.
 %package devel
 Summary:         Development files for %{name}
 Group:           Development/Libraries
-Requires:        %{name} = %{version}-%{release}
+Requires:        %{name}-libs = %{version}-%{release}
 Requires:        %{_includedir}/X11/extensions, %{_includedir}/GL
 
 %description devel
@@ -301,6 +301,10 @@ fi ||:
 %{_includedir}/X11/extensions/*.h
 
 %changelog
+* Sat Oct 18 2008 Stewart Adam <s.adam at diffingo.com> - 8.543-3.8.10
+- Change dependency of main package to libs subpackage in devel subpackage to
+  fix multiarch repo push
+
 * Thu Oct 16 2008 Stewart Adam <s.adam at diffingo.com> - 8.542-2.8.10
 - Retag.
 
