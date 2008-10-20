@@ -9,7 +9,7 @@
 
 Name:            xorg-x11-drv-fglrx
 Version:         8.543
-Release:         0.2.%{ativersion}%{?dist}
+Release:         0.3.%{ativersion}%{?dist}
 Summary:         AMD's proprietary driver for ATI graphic cards
 Group:           User Interface/X Hardware Support
 License:         BSD/Commercial/GPL/QPL
@@ -41,7 +41,7 @@ Requires(post):  fglrx-kmod >= %{version}
 
 # Needed in all nvidia or fglrx driver packages
 BuildRequires:   desktop-file-utils
-Requires:        livna-config-display >= 0.0.18
+Requires:        livna-config-display >= 0.0.21
 Requires:        %{name}-libs = %{version}-%{release}
 Requires:        %{atilibdir}/libGL.so.1.2
 Requires(post):  livna-config-display
@@ -147,14 +147,17 @@ do
   elif [[ ! "/${file##./usr/X11R6/%{_lib}/modules/dri}" = "/${file}" ]]
   then
     install -D -p -m 0755 fglrxpkg/${file} $RPM_BUILD_ROOT/%{_prefix}/%{_lib}/dri/${file##./usr/X11R6/%{_lib}/modules/dri}
+  elif [[ ! "/${file##./usr/X11R6/%{_lib}/modules/extensions}" = "/${file}" ]]
+  then
+    install -D -p -m 0755 fglrxpkg/${file} $RPM_BUILD_ROOT/%{_libdir}/xorg/modules/extensions/fglrx/${file##./usr/X11R6/%{_lib}/modules/extensions}
   elif [[ ! "/${file##./usr/X11R6/%{_lib}/modules}" = "/${file}" ]]
   then
     install -D -p -m 0755 fglrxpkg/${file} $RPM_BUILD_ROOT/%{_libdir}/xorg/modules/${file##./usr/X11R6/%{_lib}/modules}
-  %ifarch %{ix86}
+%ifarch %{ix86}
   elif [[ ! "/${file##./usr/X11R6/lib/modules/dri}" = "/${file}" ]]
   then
     install -D -p -m 0755 fglrxpkg/${file} $RPM_BUILD_ROOT/%{_prefix}/lib/dri/${file##./usr/X11R6/lib/modules/dri}
-  %endif
+%endif
   elif [[ ! "/${file##./usr/X11R6/include/X11/extensions}" = "/${file}" ]]
   then
     install -D -p -m 0644 fglrxpkg/${file} $RPM_BUILD_ROOT/%{_includedir}/X11/extensions/${file##./usr/X11R6/include/X11/extensions}
@@ -295,7 +298,7 @@ fi ||:
 %{atilibdir}/libAMDXvBA.cap
 %{_libdir}/dri/
 %{_libdir}/xorg/modules/*.so
-%{_libdir}/xorg/modules/extensions/*.so
+%{_libdir}/xorg/modules/extensions/fglrx/
 
 %files devel
 %defattr(-,root,root,-)
@@ -306,6 +309,10 @@ fi ||:
 %{_includedir}/X11/extensions/*.h
 
 %changelog
+* Mon Oct 20 2008 Stewart Adam <s.adam at diffingo.com> - 8.543-0.3.8.11beta
+- Move libdri to the extensions/fglrx directory to prevent conflicts
+- Require livna-config-display >= 0.0.21
+
 * Sat Oct 18 2008 Stewart Adam <s.adam at diffingo.com> - 8.543-0.2.8.11beta
 - Change dependency of main package to libs subpackage in devel subpackage to
   fix multiarch repo push
