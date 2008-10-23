@@ -9,7 +9,7 @@
 
 Name:            xorg-x11-drv-fglrx
 Version:         8.543
-Release:         0.3.%{ativersion}%{?dist}
+Release:         0.4.%{ativersion}%{?dist}
 Summary:         AMD's proprietary driver for ATI graphic cards
 Group:           User Interface/X Hardware Support
 License:         BSD/Commercial/GPL/QPL
@@ -30,11 +30,6 @@ Source11:        fglrx.csh
 BuildRoot:       %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 ExclusiveArch:   x86_64 i386
-
-# pulls compat-libstdc++-33
-Requires:        libstdc++.so.5
-Requires:        libstdc++.so.5(CXXABI_1.2)
-Requires:        libstdc++.so.5(GLIBCPP_3.2)
 
 Requires:        fglrx-kmod >= %{version}
 Requires(post):  fglrx-kmod >= %{version}
@@ -289,6 +284,8 @@ fi ||:
 %{_datadir}/ati/amdcccle/*
 %{_datadir}/icons/*
 %{_mandir}/man[1-9]/atieventsd.*
+%{_libdir}/xorg/modules/extensions/fglrx/
+%{_libdir}/xorg/modules/*.so
 
 %files libs
 %defattr(-,root,root,-)
@@ -297,8 +294,6 @@ fi ||:
 # FIXME: This file is recognized as "data" - figure out how to move it later
 %{atilibdir}/libAMDXvBA.cap
 %{_libdir}/dri/
-%{_libdir}/xorg/modules/*.so
-%{_libdir}/xorg/modules/extensions/fglrx/
 
 %files devel
 %defattr(-,root,root,-)
@@ -309,6 +304,10 @@ fi ||:
 %{_includedir}/X11/extensions/*.h
 
 %changelog
+* Thu Oct 23 2008 Stewart Adam <s.adam at diffingo.com> - 8.543-0.4.8.11beta
+- Don't place Xorg modules in -libs
+- Let RPM detect dependency on libstdc
+
 * Mon Oct 20 2008 Stewart Adam <s.adam at diffingo.com> - 8.543-0.3.8.11beta
 - Move libdri to the extensions/fglrx directory to prevent conflicts
 - Require livna-config-display >= 0.0.21
