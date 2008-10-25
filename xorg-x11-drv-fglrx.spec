@@ -9,7 +9,7 @@
 
 Name:            xorg-x11-drv-fglrx
 Version:         8.543
-Release:         0.4.%{ativersion}%{?dist}
+Release:         0.5.%{ativersion}%{?dist}
 Summary:         AMD's proprietary driver for ATI graphic cards
 Group:           User Interface/X Hardware Support
 License:         BSD/Commercial/GPL/QPL
@@ -82,7 +82,6 @@ such as OpenGL headers.
 %package libs
 Summary:         Libraries for %{name}
 Group:           User Interface/X Hardware Support
-Requires:        %{name} = %{version}-%{release}
 %ifarch %{ix86}
 Provides: %{name}-libs-32bit = %{version}-%{release}
 Obsoletes: %{name}-libs-32bit <= %{version}-%{release}
@@ -305,6 +304,9 @@ fi ||:
 %{_includedir}/X11/extensions/*.h
 
 %changelog
+* Sat Oct 25 2008 Stewart Adam <s.adam at diffingo.com> - 8.543-0.5.8.11beta
+- Remove the libs subpackage's dependency on main package
+  
 * Thu Oct 23 2008 Stewart Adam <s.adam at diffingo.com> - 8.543-0.4.8.11beta
 - Don't place Xorg modules in -libs
 - Let RPM detect dependency on libstdc
