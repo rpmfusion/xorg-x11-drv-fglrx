@@ -9,7 +9,7 @@
 
 Name:            xorg-x11-drv-fglrx
 Version:         8.542
-Release:         3.%{ativersion}%{?dist}
+Release:         4.%{ativersion}%{?dist}
 Summary:         AMD's proprietary driver for ATI graphic cards
 Group:           User Interface/X Hardware Support
 License:         BSD/Commercial/GPL/QPL
@@ -29,11 +29,6 @@ Source11:        fglrx.csh
 BuildRoot:       %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 ExclusiveArch:   x86_64 i386
-
-# pulls compat-libstdc++-33
-Requires:        libstdc++.so.5
-Requires:        libstdc++.so.5(CXXABI_1.2)
-Requires:        libstdc++.so.5(GLIBCPP_3.2)
 
 Requires:        fglrx-kmod >= %{version}
 Requires(post):  fglrx-kmod >= %{version}
@@ -86,7 +81,6 @@ such as OpenGL headers.
 %package libs
 Summary:         Libraries for %{name}
 Group:           User Interface/X Hardware Support
-Requires:        %{name} = %{version}-%{release}
 %ifarch %{ix86}
 Provides: %{name}-libs-32bit = %{version}-%{release}
 Obsoletes: %{name}-libs-32bit <= %{version}-%{release}
@@ -144,11 +138,11 @@ do
   elif [[ ! "/${file##./usr/X11R6/%{_lib}/modules}" = "/${file}" ]]
   then
     install -D -p -m 0755 fglrxpkg/${file} $RPM_BUILD_ROOT/%{_libdir}/xorg/modules/${file##./usr/X11R6/%{_lib}/modules}
-  %ifarch %{ix86}
+%ifarch %{ix86}
   elif [[ ! "/${file##./usr/X11R6/lib/modules/dri}" = "/${file}" ]]
   then
     install -D -p -m 0755 fglrxpkg/${file} $RPM_BUILD_ROOT/%{_prefix}/lib/dri/${file##./usr/X11R6/lib/modules/dri}
-  %endif
+%endif
   elif [[ ! "/${file##./usr/X11R6/include/X11/extensions}" = "/${file}" ]]
   then
     install -D -p -m 0644 fglrxpkg/${file} $RPM_BUILD_ROOT/%{_includedir}/X11/extensions/${file##./usr/X11R6/include/X11/extensions}
@@ -158,7 +152,7 @@ do
   #elif [[ ! "/${file##./usr/X11R6/lib/}" = "/${file}" ]]
   #then
   # atilibdir32bit doesn't exist anymore; we do multiarch builds instead (ie "make i386" catches these files)
-  #  #install -D -p -m 0755 fglrxpkg/${file} $RPM_BUILD_ROOT/%{atilibdir32bit}/${file##./usr/X11R6/lib/}
+  #  install -D -p -m 0755 fglrxpkg/${file} $RPM_BUILD_ROOT/%{atilibdir32bit}/${file##./usr/X11R6/lib/}
   #  continue
   elif [[ ! "/${file##./usr/X11R6/bin/}" = "/${file}" ]]
   then
@@ -281,6 +275,8 @@ fi ||:
 %{_datadir}/ati/amdcccle/*
 %{_datadir}/icons/*
 %{_mandir}/man[1-9]/atieventsd.*
+%{_libdir}/xorg/modules/extensions/fglrx/
+%{_libdir}/xorg/modules/*.so
 
 %files libs
 %defattr(-,root,root,-)
@@ -289,8 +285,6 @@ fi ||:
 # FIXME: This file is recognized as "data" - figure out how to move it later
 %{atilibdir}/libAMDXvBA.cap
 %{_libdir}/dri/
-%{_libdir}/xorg/modules/*.so
-%{_libdir}/xorg/modules/extensions/fglrx/
 
 %files devel
 %defattr(-,root,root,-)
@@ -301,6 +295,11 @@ fi ||:
 %{_includedir}/X11/extensions/*.h
 
 %changelog
+* Sat Oct 25 2008 Stewart Adam <s.adam at diffingo.com> - 8.543-4.8.10
+- Remove the libs subpackage's dependency on main package
+- Don't place Xorg modules in -libs
+- Let RPM detect dependency on libstdc
+
 * Sat Oct 18 2008 Stewart Adam <s.adam at diffingo.com> - 8.543-3.8.10
 - Change dependency of main package to libs subpackage in devel subpackage to
   fix multiarch repo push
