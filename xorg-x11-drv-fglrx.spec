@@ -58,8 +58,8 @@ Conflicts:       ATI-fglrx-devel
 Conflicts:       kernel-module-ATI-fglrx
 Conflicts:       ATI-fglrx-IA32-libs
 
-Obsoletes:	ati-x11-drv < %{version}-%{release}
-Provides:	ati-x11-drv = %{version}-%{release}
+Obsoletes:       ati-x11-drv < %{version}-%{release}
+Provides:        ati-x11-drv = %{version}-%{release}
 
 %description
 This package provides the most recent proprietary AMD display driver which
@@ -77,8 +77,8 @@ Group:           Development/Libraries
 Requires:        %{name}-libs = %{version}-%{release}
 Requires:        %{_includedir}/X11/extensions, %{_includedir}/GL
 
-Obsoletes:	ati-x11-drv-devel < %{version}-%{release}
-Provides:	ati-x11-drv-devel = %{version}-%{release}
+Obsoletes:       ati-x11-drv-devel < %{version}-%{release}
+Provides:        ati-x11-drv-devel = %{version}-%{release}
 
 %description devel
 This package provides the development files of the %{name} package,
@@ -88,6 +88,7 @@ such as OpenGL headers.
 %package libs
 Summary:         Libraries for %{name}
 Group:           User Interface/X Hardware Support
+Requires:        %{name} = %{version}-%{release}
 %ifarch %{ix86}
 Provides: %{name}-libs-32bit = %{version}-%{release}
 Obsoletes: %{name}-libs-32bit <= %{version}-%{release}
@@ -311,6 +312,7 @@ fi ||:
 %changelog
 * Mon Nov 3 2008 Stewart Adam <s.adam at diffingo.com> - 8.543-0.6.8.11beta
 - Fix upgrade path for FreshRPMs users
+- Revert the libs dep change
 
 * Sat Oct 25 2008 Stewart Adam <s.adam at diffingo.com> - 8.543-0.5.8.11beta
 - Remove the libs subpackage's dependency on main package
@@ -330,7 +332,7 @@ fi ||:
 * Thu Oct 16 2008 Stewart Adam <s.adam at diffingo.com> - 8.543-0.1.8.11beta
 - Update to 8.11 beta (8.54.3)
 
-* Thu Oct 16 2008 Stewart Adam <s.adam at diffingo.com>	- 8.542-1.8.10
+* Thu Oct 16 2008 Stewart Adam <s.adam at diffingo.com> - 8.542-1.8.10
 - Update to 8.10
 
 * Sat Sep 21 2008 Stewart Adam <s.adam at diffingo.com> - 8.532-1.8.09
