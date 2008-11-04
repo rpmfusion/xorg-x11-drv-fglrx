@@ -9,7 +9,7 @@
 
 Name:            xorg-x11-drv-fglrx
 Version:         8.543
-Release:         0.5.%{ativersion}%{?dist}
+Release:         0.6.%{ativersion}%{?dist}
 Summary:         AMD's proprietary driver for ATI graphic cards
 Group:           User Interface/X Hardware Support
 License:         BSD/Commercial/GPL/QPL
@@ -58,6 +58,9 @@ Conflicts:       ATI-fglrx-devel
 Conflicts:       kernel-module-ATI-fglrx
 Conflicts:       ATI-fglrx-IA32-libs
 
+Obsoletes:	ati-x11-drv < %{version}-%{release}
+Provides:	ati-x11-drv = %{version}-%{release}
+
 %description
 This package provides the most recent proprietary AMD display driver which
 allows for hardware accelerated rendering with ATI Mobility, FireGL and
@@ -73,6 +76,9 @@ Summary:         Development files for %{name}
 Group:           Development/Libraries
 Requires:        %{name}-libs = %{version}-%{release}
 Requires:        %{_includedir}/X11/extensions, %{_includedir}/GL
+
+Obsoletes:	ati-x11-drv-devel < %{version}-%{release}
+Provides:       ati-x11-drv-devel = %{version}-%{release}
 
 %description devel
 This package provides the development files of the %{name} package,
@@ -304,6 +310,9 @@ fi ||:
 %{_includedir}/X11/extensions/*.h
 
 %changelog
+* Mon Nov 3 2008 Stewart Adam <s.adam at diffingo.com> - 8.543-0.6.8.11beta
+- Fix upgrade path for FreshRPMs users
+
 * Sat Oct 25 2008 Stewart Adam <s.adam at diffingo.com> - 8.543-0.5.8.11beta
 - Remove the libs subpackage's dependency on main package
   
