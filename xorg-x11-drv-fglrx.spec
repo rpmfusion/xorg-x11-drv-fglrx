@@ -1,5 +1,5 @@
 %define          atilibdir       %{_libdir}/fglrx
-%define          ativersion  8.11
+%define          ativersion  8.12
 
 # Tweak to have debuginfo - part 1/2
 %if 0%{?fedora} > 7
@@ -8,13 +8,13 @@
 %endif
 
 Name:            xorg-x11-drv-fglrx
-Version:         8.552
+Version:         8.561
 Release:         1.%{ativersion}%{?dist}
 Summary:         AMD's proprietary driver for ATI graphic cards
 Group:           User Interface/X Hardware Support
 License:         BSD/Commercial/GPL/QPL
 URL:             http://www.ati.com/support/drivers/linux/radeon-linux.html
-Source0:         https://a248.e.akamai.net/f/674/9206/0/www2.ati.com/drivers/linux/ati-driver-installer-8-11-x86.x86_64.run
+Source0:         https://a248.e.akamai.net/f/674/9206/0/www2.ati.com/drivers/linux/ati-driver-installer-8-12-x86.x86_64.run
 Source1:         fglrx-README.Fedora
 Source3:         fglrx-config-display
 Source4:         fglrx-init
@@ -48,6 +48,9 @@ Provides:        fglrx-kmod-common = %{version}
 Conflicts:       xorg-x11-drv-nvidia
 Conflicts:       xorg-x11-drv-nvidia-legacy
 Conflicts:       xorg-x11-drv-nvidia-96xx
+Conflicts:       xorg-x11-drv-nvidia-173xx
+Conflicts:       xorg-x11-drv-nvidia-beta
+Conflicts:       xorg-x11-drv-nvidia-newest
 Obsoletes:       fglrx-kmod < %{version}
 
 # ATI auto-generated RPMs
@@ -153,6 +156,9 @@ do
   elif [[ ! "/${file##./usr/X11R6/include/X11/extensions}" = "/${file}" ]]
   then
     install -D -p -m 0644 fglrxpkg/${file} $RPM_BUILD_ROOT/%{_includedir}/X11/extensions/${file##./usr/X11R6/include/X11/extensions}
+  elif [[ ! "/${file##./usr/%{_lib}}" = "/${file}" ]]
+  then
+    install -D -p -m 0755 fglrxpkg/${file} $RPM_BUILD_ROOT/%{atilibdir}/${file##./usr/%{_lib}/}
   elif [[ ! "/${file##./usr/X11R6/%{_lib}/}" = "/${file}" ]]
   then
     install -D -p -m 0755 fglrxpkg/${file} $RPM_BUILD_ROOT/%{atilibdir}/${file##./usr/X11R6/%{_lib}/}
@@ -296,6 +302,10 @@ fi ||:
 %{_includedir}/X11/extensions/*.h
 
 %changelog
+* Wed Dec 10 2008 Stewart Adam <s.adam at diffingo.com> - 8.561-1.8.12
+- Update to 8.12
+- Add Conflicts: for new nvidia packages
+
 * Mon Nov 17 2008 Stewart Adam <s.adam at diffingo.com> - 8.552-1.8.11
 - Update to 8.11
 
