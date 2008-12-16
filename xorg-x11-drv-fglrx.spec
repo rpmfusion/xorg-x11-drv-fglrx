@@ -1,5 +1,5 @@
 %define          atilibdir       %{_libdir}/fglrx
-%define          ativersion  8.11beta
+%define          ativersion  8.12
 
 # Tweak to have debuginfo - part 1/2
 %if 0%{?fedora} > 7
@@ -8,14 +8,13 @@
 %endif
 
 Name:            xorg-x11-drv-fglrx
-Version:         8.543
-Release:         0.6.%{ativersion}%{?dist}
+Version:         8.561
+Release:         1.%{ativersion}%{?dist}
 Summary:         AMD's proprietary driver for ATI graphic cards
 Group:           User Interface/X Hardware Support
 License:         BSD/Commercial/GPL/QPL
 URL:             http://www.ati.com/support/drivers/linux/radeon-linux.html
-#Source0:         https://a248.e.akamai.net/f/674/9206/0/www2.ati.com/drivers/linux/ati-driver-installer-8-10-x86.x86_64.run
-Source0:         http://archive.ubuntu.com/ubuntu/pool/multiverse/f/fglrx-installer/fglrx-installer_8.543.orig.tar.gz
+Source0:         https://a248.e.akamai.net/f/674/9206/0/www2.ati.com/drivers/linux/ati-driver-installer-8-12-x86.x86_64.run
 Source1:         fglrx-README.Fedora
 Source3:         fglrx-config-display
 Source4:         fglrx-init
@@ -49,6 +48,9 @@ Provides:        fglrx-kmod-common = %{version}
 Conflicts:       xorg-x11-drv-nvidia
 Conflicts:       xorg-x11-drv-nvidia-legacy
 Conflicts:       xorg-x11-drv-nvidia-96xx
+Conflicts:       xorg-x11-drv-nvidia-173xx
+Conflicts:       xorg-x11-drv-nvidia-beta
+Conflicts:       xorg-x11-drv-nvidia-newest
 Obsoletes:       fglrx-kmod < %{version}
 
 # ATI auto-generated RPMs
@@ -100,14 +102,7 @@ This package provides the shared libraries for %{name}.
 
 %prep
 %setup -q -c -T
-#sh %{SOURCE0} --extract fglrx
-mkdir -p fglrx/common
-pushd fglrx
-tar xfz %{SOURCE0}
-mv etc lib opt usr common
-cp common/usr/share/doc/fglrx/ATI_LICENSE.TXT .
-popd
-
+sh %{SOURCE0} --extract fglrx
 tar -cjf fglrx-kmod-data-%{version}.tar.bz2 fglrx/ATI_LICENSE.TXT fglrx/common/*/modules/fglrx/ fglrx/arch/*/*/modules/fglrx/
 
 # Tweak to have debuginfo - part 2/2
@@ -118,12 +113,10 @@ sed -i -e 's|strict=true|strict=false|' find-debuginfo.sh
 
 mkdir fglrxpkg
 %ifarch %{ix86}
-#cp -r fglrx/common/* fglrx/x710/* fglrx/arch/x86/* fglrxpkg/
 cp -r fglrx/common/* fglrx/x740/* fglrx/arch/x86/* fglrxpkg/
 %endif
 
 %ifarch x86_64
-#cp -r fglrx/common/* fglrx/x710_64a/* fglrx/arch/x86_64/* fglrxpkg/
 cp -r fglrx/common/* fglrx/x740_64a/* fglrx/arch/x86_64/* fglrxpkg/
 %endif
 
@@ -162,14 +155,12 @@ do
   elif [[ ! "/${file##./usr/X11R6/include/X11/extensions}" = "/${file}" ]]
   then
     install -D -p -m 0644 fglrxpkg/${file} $RPM_BUILD_ROOT/%{_includedir}/X11/extensions/${file##./usr/X11R6/include/X11/extensions}
+  elif [[ ! "/${file##./usr/%{_lib}}" = "/${file}" ]]
+  then
+    install -D -p -m 0755 fglrxpkg/${file} $RPM_BUILD_ROOT/%{atilibdir}/${file##./usr/%{_lib}/}
   elif [[ ! "/${file##./usr/X11R6/%{_lib}/}" = "/${file}" ]]
   then
     install -D -p -m 0755 fglrxpkg/${file} $RPM_BUILD_ROOT/%{atilibdir}/${file##./usr/X11R6/%{_lib}/}
-  #elif [[ ! "/${file##./usr/X11R6/lib/}" = "/${file}" ]]
-  #then
-  # atilibdir32bit doesn't exist anymore; we do multiarch builds instead (ie "make i386" catches these files)
-  #  #install -D -p -m 0755 fglrxpkg/${file} $RPM_BUILD_ROOT/%{atilibdir32bit}/${file##./usr/X11R6/lib/}
-  #  continue
   elif [[ ! "/${file##./usr/X11R6/bin/}" = "/${file}" ]]
   then
     install -D -p -m 0755 fglrxpkg/${file} $RPM_BUILD_ROOT/%{_bindir}/${file##./usr/X11R6/bin/}
@@ -310,6 +301,10 @@ fi ||:
 %{_includedir}/X11/extensions/*.h
 
 %changelog
+* Tue Dec 16 2008 Stewart Adam <s.adam at diffingo.com> - 8.561-1.8.12
+- Update to 8.12
+- Add Conflicts: for new nvidia packages
+
 * Mon Nov 3 2008 Stewart Adam <s.adam at diffingo.com> - 8.543-0.6.8.11beta
 - Fix upgrade path for FreshRPMs users
 - Revert the libs dep change
