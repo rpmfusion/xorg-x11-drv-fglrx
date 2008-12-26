@@ -25,8 +25,7 @@ Source8:         fglrx-a-ac-aticonfig
 Source9:         fglrx-a-lid-aticonfig
 Source10:        fglrx.sh
 Source11:        fglrx.csh
-Source12:        blacklist-radeon
-Source13:        udev-fglrx
+Source12:        udev-fglrx
 
 BuildRoot:       %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
@@ -232,7 +231,7 @@ chmod 755 $RPM_BUILD_ROOT/%{_sysconfdir}/ati/*.sh
 
 #Udev dri nodes for fglrx
 mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/udev/makedev.d
-install -pm 0644 %{SOURCE13} $RPM_BUILD_ROOT%{_sysconfdir}/udev/makedev.d/40-fglrx-dri.nodes
+install -pm 0644 %{SOURCE12} $RPM_BUILD_ROOT%{_sysconfdir}/udev/makedev.d/40-fglrx-dri.nodes
 
 %clean
 rm -rf $RPM_BUILD_ROOT
