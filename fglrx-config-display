@@ -58,6 +58,27 @@ class fglrxConfigDisplay(GlxConfig):
         if currentDriver == self.majorVendor:
             print _('Driver already enabled.')
             return
+        
+        # Annoying bit because newer fglrx drivers require a Screen section
+        if len(self.xconfig.layout) == 0: # no layouts
+          layout = xf86config.XF86ConfLayout()
+          self.xconfig.layout.insert(layout)
+          layout.identifier = "Default Layout"
+        else:
+          layout = self.xconfig.layout[0]
+        if len(layout.adjacencies) == 0: # no layout adjacencies
+          layout.adjacencies.insert(xf86config.XF86ConfAdjacency())
+        layout.adjacencies[0].screen = "Screen0"
+        if len(self.xconfig.screen) == 0: # no screens
+          screen = xf86config.XF86ConfScreen()
+          self.xconfig.screen.insert(screen)
+        else:
+          screen = self.xconfig.screen[0]
+        screen.device = "Videocard0"
+        screen.defaultdepth = 24
+        screen.identifier = "Screen0"
+        self.xconfig.device[0].identifier = 'Videocard0'
+        
         # fglrx modules
         self.addModulePath("/extensions/fglrx", self.TOP_MOD_DIR)
         # 'remembering' magic's in here.
@@ -84,10 +105,6 @@ class fglrxConfigDisplay(GlxConfig):
         #if not self.checkForModuleAndRemove("radeon") or not self.checkForModuleAndRemove("drm"):
         #    print WARNING_DRI_NOT_AVAILABLE
         Utils.writeXorgConf(self.xconfig, self.xconfigpath)
-        # 20071023: AIGLX now supported by fglrx 8.42.3!
-        ## Disable AIGLX by default, it's not compatible
-        #self.setComposite(False)
-        #self.setAiglxFlag(False)
         self.restoreconf()
 
     def disable(self, isAutoConfigure=True):

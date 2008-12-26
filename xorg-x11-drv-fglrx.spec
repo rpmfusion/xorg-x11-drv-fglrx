@@ -9,7 +9,7 @@
 
 Name:            xorg-x11-drv-fglrx
 Version:         8.561
-Release:         1.%{ativersion}%{?dist}
+Release:         2.%{ativersion}%{?dist}
 Summary:         AMD's proprietary driver for ATI graphic cards
 Group:           User Interface/X Hardware Support
 License:         BSD/Commercial/GPL/QPL
@@ -301,6 +301,9 @@ fi ||:
 %{_includedir}/X11/extensions/*.h
 
 %changelog
+* Thu Dec 25 2008 Stewart Adam <s.adam at diffingo.com> - 8.561-2.8.12
+- Add extra bits to create Screen section in xorg.conf
+
 * Tue Dec 16 2008 Stewart Adam <s.adam at diffingo.com> - 8.561-1.8.12
 - Update to 8.12
 - Add Conflicts: for new nvidia packages
