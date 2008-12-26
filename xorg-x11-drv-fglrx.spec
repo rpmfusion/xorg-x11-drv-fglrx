@@ -9,7 +9,7 @@
 
 Name:            xorg-x11-drv-fglrx
 Version:         8.561
-Release:         1.%{ativersion}%{?dist}
+Release:         3.%{ativersion}%{?dist}
 Summary:         AMD's proprietary driver for ATI graphic cards
 Group:           User Interface/X Hardware Support
 License:         BSD/Commercial/GPL/QPL
@@ -25,6 +25,8 @@ Source8:         fglrx-a-ac-aticonfig
 Source9:         fglrx-a-lid-aticonfig
 Source10:        fglrx.sh
 Source11:        fglrx.csh
+Source12:        blacklist-radeon
+Source13:        udev-fglrx
 
 BuildRoot:       %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
@@ -228,6 +230,10 @@ find $RPM_BUILD_ROOT -type f -name '*.a' -exec chmod 0644 '{}' \;
 chmod 644 $RPM_BUILD_ROOT/%{_sysconfdir}/ati/*.xbm.example
 chmod 755 $RPM_BUILD_ROOT/%{_sysconfdir}/ati/*.sh
 
+#Udev dri nodes for fglrx
+mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/udev/makedev.d
+install -pm 0644 %{SOURCE13} $RPM_BUILD_ROOT%{_sysconfdir}/udev/makedev.d/40-fglrx-dri.nodes
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -260,6 +266,7 @@ fi ||:
 %files
 %defattr(-,root,root,-)
 %doc fglrxpkg/usr/share/doc/fglrx/*
+%{_sysconfdir}/udev/makedev.d/40-fglrx-dri.nodes
 %dir %{_sysconfdir}/ati/
 %{_sysconfdir}/ati/authatieventsd.sh
 %{_sysconfdir}/ati/signature
@@ -302,6 +309,13 @@ fi ||:
 %{_includedir}/X11/extensions/*.h
 
 %changelog
+* Thu Dec 25 2008 Stewart Adam <s.adam at diffingo.com> - 8.561-3.8.12
+- Remove blacklist, generate via fglrx-config-display instead
+- Add extra bits to create Screen section in xorg.conf
+
+* Tue Dec 16 2008 kwizart < kwizart at gmail.com > - 8.561-2.8.12
+- Add blacklist-radeon and 40-fglrx-dri.nodes
+
 * Wed Dec 10 2008 Stewart Adam <s.adam at diffingo.com> - 8.561-1.8.12
 - Update to 8.12
 - Add Conflicts: for new nvidia packages
