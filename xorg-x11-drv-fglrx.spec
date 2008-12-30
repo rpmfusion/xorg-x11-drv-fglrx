@@ -9,7 +9,7 @@
 
 Name:            xorg-x11-drv-fglrx
 Version:         8.561
-Release:         3.%{ativersion}%{?dist}
+Release:         4.%{ativersion}%{?dist}
 Summary:         AMD's proprietary driver for ATI graphic cards
 Group:           User Interface/X Hardware Support
 License:         BSD/Commercial/GPL/QPL
@@ -26,6 +26,7 @@ Source9:         fglrx-a-lid-aticonfig
 Source10:        fglrx.sh
 Source11:        fglrx.csh
 Source12:        udev-fglrx
+Source13:        blacklist-radeon
 
 BuildRoot:       %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
@@ -229,9 +230,17 @@ find $RPM_BUILD_ROOT -type f -name '*.a' -exec chmod 0644 '{}' \;
 chmod 644 $RPM_BUILD_ROOT/%{_sysconfdir}/ati/*.xbm.example
 chmod 755 $RPM_BUILD_ROOT/%{_sysconfdir}/ati/*.sh
 
-#Udev dri nodes for fglrx
+# blacklist to prevent radeon autoloading
+mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/modprobe.d
+install -pm 0644 %{SOURCE13} $RPM_BUILD_ROOT%{_sysconfdir}/modprobe.d/blacklist-radeon
+
+# Udev dri nodes for fglrx
 mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/udev/makedev.d
 install -pm 0644 %{SOURCE12} $RPM_BUILD_ROOT%{_sysconfdir}/udev/makedev.d/40-fglrx-dri.nodes
+
+# dri workaround
+mkdir -p $RPM_BUILD_ROOT%{_prefix}/lib/dri
+ln -s ../lib64/fglrx_dri.so $RPM_BUILD_ROOT%{_prefix}/lib/dri/
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -276,7 +285,8 @@ fi ||:
 %config %{_sysconfdir}/ati/control
 %config %{_sysconfdir}/ati/amdpcsdb.default
 %config(noreplace) %{_sysconfdir}/acpi/events/*aticonfig.conf
-%config(noreplace)%{_sysconfdir}/profile.d/fglrx.*
+%config(noreplace) %{_sysconfdir}/profile.d/fglrx.*
+%config(noreplace) %{_sysconfdir}/modprobe.d/blacklist-radeon
 %{_initrddir}/*
 %{_sbindir}/*
 %{_bindir}/*
@@ -290,6 +300,10 @@ fi ||:
 %{_mandir}/man[1-9]/atieventsd.*
 %{_libdir}/xorg/modules/extensions/fglrx/
 %{_libdir}/xorg/modules/*.so
+%{_libdir}/dri/
+%ifarch x86_64
+%{_prefix}/lib/dri/
+%endif
 
 %files libs
 %defattr(-,root,root,-)
@@ -297,7 +311,6 @@ fi ||:
 %{atilibdir}/*.so*
 # FIXME: This file is recognized as "data" - figure out how to move it later
 %{atilibdir}/libAMDXvBA.cap
-%{_libdir}/dri/
 
 %files devel
 %defattr(-,root,root,-)
@@ -308,6 +321,11 @@ fi ||:
 %{_includedir}/X11/extensions/*.h
 
 %changelog
+* Sun Dec 28 2008 Stewart Adam <s.adam at diffingo.com> - 8.561-4.8.12
+- Move fglrx_dri.so to monolib package
+- Static blacklist required for <R600 hardware, add it back
+- Make fglrx-config-display check the ldfile to see if it's already enabled
+
 * Thu Dec 25 2008 Stewart Adam <s.adam at diffingo.com> - 8.561-3.8.12
 - Remove blacklist, generate via fglrx-config-display instead
 - Add extra bits to create Screen section in xorg.conf

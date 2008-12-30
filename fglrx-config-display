@@ -55,7 +55,7 @@ class fglrxConfigDisplay(GlxConfig):
         # Backup the file before make any change.
         currentDriver = self.getDriver()
         # Already enabled?
-        if currentDriver == self.majorVendor:
+        if os.path.exists(self.ldconf):
             print _('Driver already enabled.')
             return
         
@@ -101,20 +101,13 @@ class fglrxConfigDisplay(GlxConfig):
             Utils.writeFile(self.ldconf,"/usr/lib/fglrx\n")
         print _('Running ldconfig, this could take some time...')
         Utils.runLdconfig()
-        # Requires for F10
-        blacklistContent = "#blacklist required for proprietary fglrx driver\nblacklist radeon\nblacklist radeonfb\nblacklist drm\n"
-        Utils.writeFile('/etc/modprobe.d/blacklist-radeon', blacklistContent)
-        print _('Please reboot to finish driver configuration.')
-        # Haven't heard of this in a while either.
-        #if not self.checkForModuleAndRemove("radeon") or not self.checkForModuleAndRemove("drm"):
-        #    print WARNING_DRI_NOT_AVAILABLE
         Utils.writeXorgConf(self.xconfig, self.xconfigpath)
         self.restoreconf()
 
     def disable(self, isAutoConfigure=True):
         self.removeModulePath("/extensions/fglrx", self.TOP_MOD_DIR)
         # Check if it's already disabled
-        if self.getDriver() != self.majorVendor:
+        if not os.path.exists(self.ldconf):
             print _('Driver already disabled.')
             return
         # We have to save the status file so it can be restored later
@@ -133,7 +126,6 @@ class fglrxConfigDisplay(GlxConfig):
         Utils.removeFile(self.ldconf)
         print _('Running ldconfig, this could take some time...')
         Utils.runLdconfig()
-        Utils.removeFile('/etc/modprobe.d/blacklist-radeon')
         Utils.writeXorgConf(self.xconfig, self.xconfigpath)
         # And return to the Fedora default.
         self.enableAiglx()
