@@ -9,7 +9,7 @@
 
 Name:            xorg-x11-drv-fglrx
 Version:         8.561
-Release:         3.%{ativersion}%{?dist}
+Release:         4.%{ativersion}%{?dist}
 Summary:         AMD's proprietary driver for ATI graphic cards
 Group:           User Interface/X Hardware Support
 License:         BSD/Commercial/GPL/QPL
@@ -227,9 +227,11 @@ find $RPM_BUILD_ROOT -type f -name '*.a' -exec chmod 0644 '{}' \;
 chmod 644 $RPM_BUILD_ROOT/%{_sysconfdir}/ati/*.xbm.example
 chmod 755 $RPM_BUILD_ROOT/%{_sysconfdir}/ati/*.sh
 
+%ifarch x86_64
 # dri workaround
 mkdir -p $RPM_BUILD_ROOT%{_prefix}/lib/dri
 ln -s ../lib64/fglrx_dri.so $RPM_BUILD_ROOT%{_prefix}/lib/dri/
+%endif
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -308,6 +310,9 @@ fi ||:
 %{_includedir}/X11/extensions/*.h
 
 %changelog
+* Tue Dec 30 2008 Stewart Adam <s.adam at diffingo.com> - 8.561-4.8.12
+- Only create symlink for dri workaround on x86_64
+
 * Sun Dec 28 2008 Stewart Adam <s.adam at diffingo.com> - 8.561-3.8.12
 - Move fglrx_dri.so to monolib package
 - Make fglrx-config-display check the ldfile to see if it's already enabled
