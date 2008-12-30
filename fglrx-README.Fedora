@@ -1,7 +1,8 @@
-README for AMD's Linux fglrx drivers, as packaged by livna.org.
+README for AMD's Linux fglrx drivers, as packaged by rpmfusion.org.
+
 
 1. After Installation
----------------------
+-----------------------------
 
 The easiest way to start using the fglrx drivers after installation is to
 restart your system.
@@ -44,8 +45,9 @@ two commands as root (remember su -):
     fglrx-config-display disable
 Note: DRI will be disabled in this case when the fglrx kernel-module was
 loaded. It will be enabled again on the next system restart.
-To re-enable the fglrx drivers, run:
-        fglrx-config-display enable
+To re-enable the fglrx drivers without a reboot, run:
+    fglrx-config-display enable
+
 
 
 3. Additional configuration
@@ -54,14 +56,16 @@ To re-enable the fglrx drivers, run:
 For configuration options (TwinView, TV-out etc) see
 /usr/share/doc/fglrx-*/index.html
 
-4. Kernel Module
-----------------------
 
-The fglrx kernel module is required for DRI. For Fedora kernels you will
-find RPMs with the name:
-    kmod-fglrx-$(uname -r)-(ati-version)-(livna-release-tag).(arch).rpm
-    (e.g. kmod-fglrx-8.34.8-1.2.6.20_1.2933.fc6.i686.rpm)
-at rpm.livna.org. If you use another kernel grab the proper SRPM
-    (e.g fglrx-kmod-8.34.8-4.2.6.20_1.2962.fc7.src.rpm)
-from rpm.livna.org and rebuild the kernel module with the following command:
-    rpmbuild --rebuild /path/to/fglrxRPM.src.rpm
+4. Kernel Module
+-----------------------------
+
+The fglrx kernel module is required for DRI. For Fedora kernels you will find
+RPMs with the name:
+    kmod-fglrx-$(uname -r)-(ati-version)-fc(releasever).(arch).rpm
+    (e.g. kmod-fglrx-2.6.27.7-134.fc10.x86_64-8.561-1.8.12.fc10.x86_64)
+at rpmfusion.org. If you use another kernel, grab the proper SRPM:
+    (e.g fglrx-kmod-8.561-2.8.12.fc10.src.rpm)
+from rpmfusion.org and rebuild the kernel module with the following command:
+    rpmbuild --rebuild /path/to/fglrx-srpm.src.rpm
+

@@ -9,7 +9,7 @@
 
 Name:            xorg-x11-drv-fglrx
 Version:         8.561
-Release:         2.%{ativersion}%{?dist}
+Release:         3.%{ativersion}%{?dist}
 Summary:         AMD's proprietary driver for ATI graphic cards
 Group:           User Interface/X Hardware Support
 License:         BSD/Commercial/GPL/QPL
@@ -227,6 +227,10 @@ find $RPM_BUILD_ROOT -type f -name '*.a' -exec chmod 0644 '{}' \;
 chmod 644 $RPM_BUILD_ROOT/%{_sysconfdir}/ati/*.xbm.example
 chmod 755 $RPM_BUILD_ROOT/%{_sysconfdir}/ati/*.sh
 
+# dri workaround
+mkdir -p $RPM_BUILD_ROOT%{_prefix}/lib/dri
+ln -s ../lib64/fglrx_dri.so $RPM_BUILD_ROOT%{_prefix}/lib/dri/
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -269,7 +273,7 @@ fi ||:
 %config %{_sysconfdir}/ati/control
 %config %{_sysconfdir}/ati/amdpcsdb.default
 %config(noreplace) %{_sysconfdir}/acpi/events/*aticonfig.conf
-%config(noreplace)%{_sysconfdir}/profile.d/fglrx.*
+%config(noreplace) %{_sysconfdir}/profile.d/fglrx.*
 %{_initrddir}/*
 %{_sbindir}/*
 %{_bindir}/*
@@ -283,6 +287,10 @@ fi ||:
 %{_mandir}/man[1-9]/atieventsd.*
 %{_libdir}/xorg/modules/extensions/fglrx/
 %{_libdir}/xorg/modules/*.so
+%{_libdir}/dri/
+%ifarch x86_64
+%{_prefix}/lib/dri/
+%endif
 
 %files libs
 %defattr(-,root,root,-)
@@ -290,7 +298,6 @@ fi ||:
 %{atilibdir}/*.so*
 # FIXME: This file is recognized as "data" - figure out how to move it later
 %{atilibdir}/libAMDXvBA.cap
-%{_libdir}/dri/
 
 %files devel
 %defattr(-,root,root,-)
@@ -301,6 +308,10 @@ fi ||:
 %{_includedir}/X11/extensions/*.h
 
 %changelog
+* Sun Dec 28 2008 Stewart Adam <s.adam at diffingo.com> - 8.561-3.8.12
+- Move fglrx_dri.so to monolib package
+- Make fglrx-config-display check the ldfile to see if it's already enabled
+
 * Thu Dec 25 2008 Stewart Adam <s.adam at diffingo.com> - 8.561-2.8.12
 - Add extra bits to create Screen section in xorg.conf
 
