@@ -9,7 +9,7 @@
 
 Name:            xorg-x11-drv-fglrx
 Version:         8.561
-Release:         4.%{ativersion}%{?dist}
+Release:         5.%{ativersion}%{?dist}
 Summary:         AMD's proprietary driver for ATI graphic cards
 Group:           User Interface/X Hardware Support
 License:         BSD/Commercial/GPL/QPL
@@ -238,9 +238,11 @@ install -pm 0644 %{SOURCE13} $RPM_BUILD_ROOT%{_sysconfdir}/modprobe.d/blacklist-
 mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/udev/makedev.d
 install -pm 0644 %{SOURCE12} $RPM_BUILD_ROOT%{_sysconfdir}/udev/makedev.d/40-fglrx-dri.nodes
 
+%ifarch x86_64
 # dri workaround
 mkdir -p $RPM_BUILD_ROOT%{_prefix}/lib/dri
 ln -s ../lib64/fglrx_dri.so $RPM_BUILD_ROOT%{_prefix}/lib/dri/
+%endif
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -321,6 +323,9 @@ fi ||:
 %{_includedir}/X11/extensions/*.h
 
 %changelog
+* Tue Dec 30 2008 Stewart Adam <s.adam at diffingo.com> - 8.561-5.8.12
+- Only create symlink for dri workaround on x86_64
+
 * Sun Dec 28 2008 Stewart Adam <s.adam at diffingo.com> - 8.561-4.8.12
 - Move fglrx_dri.so to monolib package
 - Static blacklist required for <R600 hardware, add it back
