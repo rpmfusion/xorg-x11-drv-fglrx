@@ -73,7 +73,7 @@ from rpmfusion.org and rebuild the kernel module with the following command:
 5. Release-specific notes
 -----------------------------
 
-This release (Catalyst 8.12) is incompatible with the plymouth graphical boot
+Recent releases (Catalyst 8.12+) are incompatible with the plymouth boot
 system implemented in Fedora 10, as the 'radeon' and 'drm' kernel modules are
 loaded from the kernel ramdisk image (initrd) before fglrx can be. Because of
 this, these modules have been blacklisted. The open-source radeon driver as well
@@ -82,7 +82,15 @@ installed. If you would like to use them, please uninstall this driver first.
 
 The initrd image for the current kernel will need to be regenerated before 3D
 rendering will function correctly. To do this, execute these commands as root:
-    mv /boot/initrd-`uname -r`.img /boot/initrd-`uname -r`.img.bak
-    mkinitrd -f --allow-missing /boot/`uname -r`.img
+    mv /boot/initrd-`uname -r`.img /boot/initrd-`uname -r`.img.rfbak
+    mkinitrd -f --allow-missing /boot/initrd-`uname -r`.img `uname -r`
 
-A final reboot will be required before things function as expected.
+A final reboot will be required before things function as expected. To restore
+plymouth functionality and use the open source drivers, first uninstall the
+xorg-x11-drv-fglrx package from your system and then run:
+    mv /boot/initrd-`uname -r`.img.rfbak /boot/initrd-`uname -r`.img
+
+Once again, a reboot will be required before the open source drivers being
+working properly.
+
+
