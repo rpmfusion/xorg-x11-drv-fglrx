@@ -1,5 +1,5 @@
 %define          atilibdir       %{_libdir}/fglrx
-%define          ativersion  8.12
+%define          ativersion  9.1
 
 # Tweak to have debuginfo - part 1/2
 %if 0%{?fedora} > 7
@@ -8,13 +8,13 @@
 %endif
 
 Name:            xorg-x11-drv-fglrx
-Version:         8.561
-Release:         5.%{ativersion}%{?dist}
+Version:         8.573
+Release:         1.%{ativersion}%{?dist}
 Summary:         AMD's proprietary driver for ATI graphic cards
 Group:           User Interface/X Hardware Support
-License:         BSD/Commercial/GPL/QPL
+License:         Redistributable, no modification permitted
 URL:             http://www.ati.com/support/drivers/linux/radeon-linux.html
-Source0:         https://a248.e.akamai.net/f/674/9206/0/www2.ati.com/drivers/linux/ati-driver-installer-8-12-x86.x86_64.run
+Source0:         https://a248.e.akamai.net/f/674/9206/0/www2.ati.com/drivers/linux/ati-driver-installer-9-1-x86.x86_64.run
 Source1:         fglrx-README.Fedora
 Source3:         fglrx-config-display
 Source4:         fglrx-init
@@ -120,8 +120,9 @@ cp -r fglrx/common/* fglrx/x740/* fglrx/arch/x86/* fglrxpkg/
 cp -r fglrx/common/* fglrx/x740_64a/* fglrx/arch/x86_64/* fglrxpkg/
 %endif
 
-# fix doc perms
+# fix doc perms & copy README.Fedora
 find fglrxpkg/usr/share/doc/fglrx -type f -exec chmod 0644 {} \;
+install -pm 0644 %{SOURCE1} ./README.Fedora
 
 %build
 
@@ -211,8 +212,7 @@ install -D -p -m 0644 %{SOURCE8} $RPM_BUILD_ROOT%{_sysconfdir}/acpi/events/a-ac-
 install -D -p -m 0644 %{SOURCE9} $RPM_BUILD_ROOT%{_sysconfdir}/acpi/events/a-lid-aticonfig.conf
 
 mkdir -p $RPM_BUILD_ROOT%{_datadir}/applications
-desktop-file-install --vendor livna \
-    --add-category X-Livna \
+desktop-file-install --vendor rpmfusion \
     --dir $RPM_BUILD_ROOT%{_datadir}/applications \
     %{SOURCE5}
 
@@ -226,12 +226,6 @@ chmod 644 fglrxpkg/usr/src/ati/fglrx_sample_source.tgz
 find $RPM_BUILD_ROOT -type f -name '*.a' -exec chmod 0644 '{}' \;
 chmod 644 $RPM_BUILD_ROOT/%{_sysconfdir}/ati/*.xbm.example
 chmod 755 $RPM_BUILD_ROOT/%{_sysconfdir}/ati/*.sh
-
-%ifarch x86_64
-# dri workaround
-mkdir -p $RPM_BUILD_ROOT%{_prefix}/lib/dri
-ln -s ../../lib64/dri/fglrx_dri.so $RPM_BUILD_ROOT%{_prefix}/lib/dri/
-%endif
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -264,7 +258,7 @@ fi ||:
 
 %files
 %defattr(-,root,root,-)
-%doc fglrxpkg/usr/share/doc/fglrx/*
+%doc fglrxpkg/usr/share/doc/fglrx/* README.Fedora
 %dir %{_sysconfdir}/ati/
 %{_sysconfdir}/ati/authatieventsd.sh
 %{_sysconfdir}/ati/signature
@@ -289,10 +283,6 @@ fi ||:
 %{_mandir}/man[1-9]/atieventsd.*
 %{_libdir}/xorg/modules/extensions/fglrx/
 %{_libdir}/xorg/modules/*.so
-%{_libdir}/dri/
-%ifarch x86_64
-%{_prefix}/lib/dri/
-%endif
 
 %files libs
 %defattr(-,root,root,-)
@@ -300,6 +290,7 @@ fi ||:
 %{atilibdir}/*.so*
 # FIXME: This file is recognized as "data" - figure out how to move it later
 %{atilibdir}/libAMDXvBA.cap
+%{_libdir}/dri/
 
 %files devel
 %defattr(-,root,root,-)
@@ -310,6 +301,12 @@ fi ||:
 %{_includedir}/X11/extensions/*.h
 
 %changelog
+* Sat Jan 31 2009 Stewart Adam <s.adam at diffingo.com> - 8.573-1.9.1
+- Update to Catalyst 9.1
+- Include README.Fedora in %%doc
+- Remove fglrx_dri.so symlink hack, move fglrx_dri.so back to -libs
+- Update License tag
+
 * Wed Dec 31 2008 Stewart Adam <s.adam at diffingo.com>	- 8.561-5.8.12
 - symlink needs to be ../lib64/dri, not ../lib64
 

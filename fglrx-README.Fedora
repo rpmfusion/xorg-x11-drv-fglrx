@@ -69,3 +69,5 @@ at rpmfusion.org. If you use another kernel, grab the proper SRPM:
 from rpmfusion.org and rebuild the kernel module with the following command:
     rpmbuild --rebuild /path/to/fglrx-srpm.src.rpm
 
+
+
