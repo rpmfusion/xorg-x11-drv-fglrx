@@ -1,7 +1,8 @@
-README for AMD's Linux fglrx drivers, as packaged by livna.org.
+README for AMD's Linux fglrx drivers, as packaged by rpmfusion.org.
+
 
 1. After Installation
----------------------
+-----------------------------
 
 The easiest way to start using the fglrx drivers after installation is to
 restart your system.
@@ -44,8 +45,9 @@ two commands as root (remember su -):
     fglrx-config-display disable
 Note: DRI will be disabled in this case when the fglrx kernel-module was
 loaded. It will be enabled again on the next system restart.
-To re-enable the fglrx drivers, run:
-        fglrx-config-display enable
+To re-enable the fglrx drivers without a reboot, run:
+    fglrx-config-display enable
+
 
 
 3. Additional configuration
@@ -54,14 +56,41 @@ To re-enable the fglrx drivers, run:
 For configuration options (TwinView, TV-out etc) see
 /usr/share/doc/fglrx-*/index.html
 
-4. Kernel Module
-----------------------
 
-The fglrx kernel module is required for DRI. For Fedora kernels you will
-find RPMs with the name:
-    kmod-fglrx-$(uname -r)-(ati-version)-(livna-release-tag).(arch).rpm
-    (e.g. kmod-fglrx-8.34.8-1.2.6.20_1.2933.fc6.i686.rpm)
-at rpm.livna.org. If you use another kernel grab the proper SRPM
-    (e.g fglrx-kmod-8.34.8-4.2.6.20_1.2962.fc7.src.rpm)
-from rpm.livna.org and rebuild the kernel module with the following command:
-    rpmbuild --rebuild /path/to/fglrxRPM.src.rpm
+4. Kernel Module
+-----------------------------
+
+The fglrx kernel module is required for DRI. For Fedora kernels you will find
+RPMs with the name:
+    kmod-fglrx-$(uname -r)-(ati-version)-fc(releasever).(arch).rpm
+    (e.g. kmod-fglrx-2.6.27.7-134.fc10.x86_64-8.561-1.8.12.fc10.x86_64)
+at rpmfusion.org. If you use another kernel, grab the proper SRPM:
+    (e.g fglrx-kmod-8.561-2.8.12.fc10.src.rpm)
+from rpmfusion.org and rebuild the kernel module with the following command:
+    rpmbuild --rebuild /path/to/fglrx-srpm.src.rpm
+
+
+5. Release-specific notes
+-----------------------------
+
+Recent releases (Catalyst 8.12+) are incompatible with the plymouth boot
+system implemented in Fedora 10, as the 'radeon' and 'drm' kernel modules are
+loaded from the kernel ramdisk image (initrd) before fglrx can be. Because of
+this, these modules have been blacklisted. The open-source radeon driver as well
+as the plymouth graphical boot system will not function while the this driver is
+installed. If you would like to use them, please uninstall this driver first.
+
+The initrd image for the current kernel will need to be regenerated before 3D
+rendering will function correctly. To do this, execute these commands as root:
+    mv /boot/initrd-`uname -r`.img /boot/initrd-`uname -r`.img.rfbak
+    mkinitrd -f --allow-missing /boot/initrd-`uname -r`.img `uname -r`
+
+A final reboot will be required before things function as expected. To restore
+plymouth functionality and use the open source drivers, first uninstall the
+xorg-x11-drv-fglrx package from your system and then run:
+    mv /boot/initrd-`uname -r`.img.rfbak /boot/initrd-`uname -r`.img
+
+Once again, a reboot will be required before the open source drivers being
+working properly.
+
+

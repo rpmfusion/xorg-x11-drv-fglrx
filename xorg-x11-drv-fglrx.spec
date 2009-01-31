@@ -1,5 +1,5 @@
 %define          atilibdir       %{_libdir}/fglrx
-%define          ativersion  8.12
+%define          ativersion  9.1
 
 # Tweak to have debuginfo - part 1/2
 %if 0%{?fedora} > 7
@@ -8,13 +8,13 @@
 %endif
 
 Name:            xorg-x11-drv-fglrx
-Version:         8.561
+Version:         8.573
 Release:         1.%{ativersion}%{?dist}
 Summary:         AMD's proprietary driver for ATI graphic cards
 Group:           User Interface/X Hardware Support
-License:         BSD/Commercial/GPL/QPL
+License:         Redistributable, no modification permitted
 URL:             http://www.ati.com/support/drivers/linux/radeon-linux.html
-Source0:         https://a248.e.akamai.net/f/674/9206/0/www2.ati.com/drivers/linux/ati-driver-installer-8-12-x86.x86_64.run
+Source0:         https://a248.e.akamai.net/f/674/9206/0/www2.ati.com/drivers/linux/ati-driver-installer-9-1-x86.x86_64.run
 Source1:         fglrx-README.Fedora
 Source3:         fglrx-config-display
 Source4:         fglrx-init
@@ -25,6 +25,8 @@ Source8:         fglrx-a-ac-aticonfig
 Source9:         fglrx-a-lid-aticonfig
 Source10:        fglrx.sh
 Source11:        fglrx.csh
+Source12:        udev-fglrx
+Source13:        blacklist-radeon
 
 BuildRoot:       %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
@@ -60,8 +62,8 @@ Conflicts:       ATI-fglrx-devel
 Conflicts:       kernel-module-ATI-fglrx
 Conflicts:       ATI-fglrx-IA32-libs
 
-Obsoletes:      ati-x11-drv < %{version}-%{release}
-Provides:       ati-x11-drv = %{version}-%{release}
+Obsoletes:       ati-x11-drv < %{version}-%{release}
+Provides:        ati-x11-drv = %{version}-%{release}
 
 %description
 This package provides the most recent proprietary AMD display driver which
@@ -117,12 +119,12 @@ cp -r fglrx/common/* fglrx/x740/* fglrx/arch/x86/* fglrxpkg/
 %endif
 
 %ifarch x86_64
-echo `pwd`
 cp -r fglrx/common/* fglrx/x740_64a/* fglrx/arch/x86_64/* fglrxpkg/
 %endif
 
-# fix doc perms
+# fix doc perms & copy README.Fedora
 find fglrxpkg/usr/share/doc/fglrx -type f -exec chmod 0644 {} \;
+install -pm 0644 %{SOURCE1} ./README.Fedora
 
 %build
 
@@ -212,8 +214,7 @@ install -D -p -m 0644 %{SOURCE8} $RPM_BUILD_ROOT%{_sysconfdir}/acpi/events/a-ac-
 install -D -p -m 0644 %{SOURCE9} $RPM_BUILD_ROOT%{_sysconfdir}/acpi/events/a-lid-aticonfig.conf
 
 mkdir -p $RPM_BUILD_ROOT%{_datadir}/applications
-desktop-file-install --vendor livna \
-    --add-category X-Livna \
+desktop-file-install --vendor rpmfusion \
     --dir $RPM_BUILD_ROOT%{_datadir}/applications \
     %{SOURCE5}
 
@@ -227,6 +228,14 @@ chmod 644 fglrxpkg/usr/src/ati/fglrx_sample_source.tgz
 find $RPM_BUILD_ROOT -type f -name '*.a' -exec chmod 0644 '{}' \;
 chmod 644 $RPM_BUILD_ROOT/%{_sysconfdir}/ati/*.xbm.example
 chmod 755 $RPM_BUILD_ROOT/%{_sysconfdir}/ati/*.sh
+
+# blacklist to prevent radeon autoloading
+mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/modprobe.d
+install -pm 0644 %{SOURCE13} $RPM_BUILD_ROOT%{_sysconfdir}/modprobe.d/blacklist-radeon
+
+# Udev dri nodes for fglrx
+mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/udev/makedev.d
+install -pm 0644 %{SOURCE12} $RPM_BUILD_ROOT%{_sysconfdir}/udev/makedev.d/40-fglrx-dri.nodes
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -259,7 +268,8 @@ fi ||:
 
 %files
 %defattr(-,root,root,-)
-%doc fglrxpkg/usr/share/doc/fglrx/*
+%doc fglrxpkg/usr/share/doc/fglrx/* README.Fedora
+%{_sysconfdir}/udev/makedev.d/40-fglrx-dri.nodes
 %dir %{_sysconfdir}/ati/
 %{_sysconfdir}/ati/authatieventsd.sh
 %{_sysconfdir}/ati/signature
@@ -270,7 +280,8 @@ fi ||:
 %config %{_sysconfdir}/ati/control
 %config %{_sysconfdir}/ati/amdpcsdb.default
 %config(noreplace) %{_sysconfdir}/acpi/events/*aticonfig.conf
-%config(noreplace)%{_sysconfdir}/profile.d/fglrx.*
+%config(noreplace) %{_sysconfdir}/profile.d/fglrx.*
+%config(noreplace) %{_sysconfdir}/modprobe.d/blacklist-radeon
 %{_initrddir}/*
 %{_sbindir}/*
 %{_bindir}/*
@@ -289,7 +300,6 @@ fi ||:
 %defattr(-,root,root,-)
 %dir %{atilibdir}
 %{atilibdir}/*.so*
-# FIXME: This file is recognized as "data" - figure out how to move it later
 %{atilibdir}/libAMDXvBA.cap
 %{_libdir}/dri/
 
@@ -302,6 +312,13 @@ fi ||:
 %{_includedir}/X11/extensions/*.h
 
 %changelog
+* Sat Jan 31 2009 Stewart Adam <s.adam at diffingo.com> - 8.573-1.9.1
+- Update to Catalst 9.1
+- Sync with changes made for F-10
+- Include README.Fedora in %%doc
+- Remove fglrx_dri.so symlink hack, move fglrx_dri.so back to -libs
+- Update License tag
+
 * Wed Dec 10 2008 Stewart Adam <s.adam at diffingo.com> - 8.561-1.8.12
 - Update to 8.12
 - Add Conflicts: for new nvidia packages
