@@ -1,5 +1,4 @@
 %define          atilibdir       %{_libdir}/fglrx
-%define          ativersion  9.1
 
 # Tweak to have debuginfo - part 1/2
 %if 0%{?fedora} > 7
@@ -8,8 +7,8 @@
 %endif
 
 Name:            xorg-x11-drv-fglrx
-Version:         8.573
-Release:         1.%{ativersion}%{?dist}
+Version:         9.1
+Release:         1%{?dist}
 Summary:         AMD's proprietary driver for ATI graphic cards
 Group:           User Interface/X Hardware Support
 License:         Redistributable, no modification permitted
@@ -312,6 +311,10 @@ fi ||:
 %{_includedir}/X11/extensions/*.h
 
 %changelog
+* Fri Feb 20 2009 Stewart Adam <s.adam at diffingo.com> - 9.1-1
+- Use Catalyst version for Version tag instead of internal driver version
+- Update README.Fedora (add note concerning double initrd regeneration)
+
 * Sat Jan 31 2009 Stewart Adam <s.adam at diffingo.com> - 8.573-1.9.1
 - Update to Catalst 9.1
 - Sync with changes made for F-10
