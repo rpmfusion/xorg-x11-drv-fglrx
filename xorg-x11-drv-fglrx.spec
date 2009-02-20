@@ -1,5 +1,4 @@
 %define          atilibdir       %{_libdir}/fglrx
-%define          ativersion  9.1
 
 # Tweak to have debuginfo - part 1/2
 %if 0%{?fedora} > 7
@@ -8,13 +7,13 @@
 %endif
 
 Name:            xorg-x11-drv-fglrx
-Version:         8.573
-Release:         1.%{ativersion}%{?dist}
+Version:         9.2
+Release:         1%{?dist}
 Summary:         AMD's proprietary driver for ATI graphic cards
 Group:           User Interface/X Hardware Support
 License:         Redistributable, no modification permitted
 URL:             http://www.ati.com/support/drivers/linux/radeon-linux.html
-Source0:         https://a248.e.akamai.net/f/674/9206/0/www2.ati.com/drivers/linux/ati-driver-installer-9-1-x86.x86_64.run
+Source0:         https://a248.e.akamai.net/f/674/9206/0/www2.ati.com/drivers/linux/ati-driver-installer-%{version}-x86.x86_64.run
 Source1:         fglrx-README.Fedora
 Source3:         fglrx-config-display
 Source4:         fglrx-init
@@ -301,6 +300,9 @@ fi ||:
 %{_includedir}/X11/extensions/*.h
 
 %changelog
+* Fri Feb 20 2009 Stewart Adam <s.adam at diffingo.com> - 9.2-1
+- Update to Catalyst 9.2
+
 * Sat Jan 31 2009 Stewart Adam <s.adam at diffingo.com> - 8.573-1.9.1
 - Update to Catalyst 9.1
 - Include README.Fedora in %%doc
