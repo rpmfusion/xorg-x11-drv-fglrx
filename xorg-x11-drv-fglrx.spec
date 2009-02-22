@@ -8,7 +8,7 @@
 
 Name:            xorg-x11-drv-fglrx
 Version:         9.2
-Release:         1%{?dist}
+Release:         2%{?dist}
 Summary:         AMD's proprietary driver for ATI graphic cards
 Group:           User Interface/X Hardware Support
 License:         Redistributable, no modification permitted
@@ -77,7 +77,7 @@ for release %{version}.
 %package devel
 Summary:         Development files for %{name}
 Group:           Development/Libraries
-Requires:        %{name}-libs = %{version}-%{release}
+Requires:        %{name}-libs-%{_target_cpu} = %{version}-%{release}
 Requires:        %{_includedir}/X11/extensions, %{_includedir}/GL
 
 Obsoletes:       ati-x11-drv-devel < %{version}-%{release}
@@ -92,6 +92,7 @@ such as OpenGL headers.
 Summary:         Libraries for %{name}
 Group:           User Interface/X Hardware Support
 Requires:        %{name} = %{version}-%{release}
+Provides:        %{name}-libs-%{_target_cpu} = %{version}-%{release}
 %ifarch %{ix86}
 Provides: %{name}-libs-32bit = %{version}-%{release}
 Obsoletes: %{name}-libs-32bit <= %{version}-%{release}
@@ -311,6 +312,9 @@ fi ||:
 %{_includedir}/X11/extensions/*.h
 
 %changelog
+* Sun Feb 22 2009 Stewart Adam <s.adam at diffingo.com> - 9.2-2
+- Make devel subpackage depend on lib subpackage of the same arch
+
 * Fri Feb 20 2009 Stewart Adam <s.adam at diffingo.com> - 9.2-1
 - Update to Catalyst 9.2
 - Use Catalyst version for Version tag instead of internal driver version
