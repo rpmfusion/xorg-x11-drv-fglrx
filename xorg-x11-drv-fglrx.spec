@@ -7,13 +7,15 @@
 %endif
 
 Name:            xorg-x11-drv-fglrx
-Version:         9.3
-Release:         1%{?dist}
+Version:         9.4
+Release:         0.1.beta%{?dist}
 Summary:         AMD's proprietary driver for ATI graphic cards
 Group:           User Interface/X Hardware Support
 License:         Redistributable, no modification permitted
 URL:             http://www.ati.com/support/drivers/linux/radeon-linux.html
-Source0:         https://a248.e.akamai.net/f/674/9206/0/www2.ati.com/drivers/linux/ati-driver-installer-9-3-x86.x86_64.run
+#Source0:         https://a248.e.akamai.net/f/674/9206/0/www2.ati.com/drivers/linux/ati-driver-installer-9-3-x86.x86_64.run
+# From https://launchpadlibrarian.net/24026289/fglrx-installer_8.600.orig.tar.gz
+Source0:         fglrx-installer_8.600.orig.tar.gz
 Source1:         fglrx-README.Fedora
 Source3:         fglrx-config-display
 Source4:         fglrx-init
@@ -68,7 +70,7 @@ Provides:        ati-x11-drv = %{version}-%{release}
 This package provides the most recent proprietary AMD display driver which
 allows for hardware accelerated rendering with ATI Mobility, FireGL and
 Desktop GPUs. Some of the Desktop and Mobility GPUs supported are the
-Radeon 9500 series to the Radeon HD 4800 series.
+Radeon HD 2000 series to the Radeon HD 4800 series.
 
 For the full product support list, please consult the release notes
 for release %{version}.
@@ -104,8 +106,16 @@ This package provides the shared libraries for %{name}.
 
 %prep
 %setup -q -c -T
-sh %{SOURCE0} --extract fglrx
-tar -cjf fglrx-kmod-data-%{version}.tar.bz2 fglrx/ATI_LICENSE.TXT fglrx/common/*/modules/fglrx/ fglrx/arch/*/*/modules/fglrx/
+#sh %{SOURCE0} --extract fglrx
+
+# Extract tarball, move things to the expected locations
+mkdir -p fglrx/common && pushd fglrx
+/usr/bin/gzip -dc %{SOURCE0} | /bin/tar -xf -
+mv etc lib opt usr common && popd
+# Back to normal now
+tar -cjf fglrx-kmod-data-%{version}.tar.bz2 fglrx/common/usr/share/doc/fglrx/ATI_LICENSE.TXT \
+                                            fglrx/common/*/modules/fglrx/ \
+                                            fglrx/arch/*/*/modules/fglrx/
 
 # Tweak to have debuginfo - part 2/2
 %if 0%{?fedora} > 7
@@ -312,6 +322,9 @@ fi ||:
 %{_includedir}/X11/extensions/*.h
 
 %changelog
+* Sat Mar 28 2009 Stewart Adam <s.adam at diffingo.com> - 9.4-0.1.beta
+- Update to Catalyst 9.4 (beta)
+
 * Sat Mar 28 2009 Stewart Adam <s.adam at diffingo.com> - 9.3-1
 - Update to Catalyst 9.3
 
