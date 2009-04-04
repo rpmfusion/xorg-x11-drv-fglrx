@@ -8,7 +8,7 @@
 
 Name:            xorg-x11-drv-fglrx
 Version:         9.4
-Release:         0.1.beta%{?dist}
+Release:         0.2.beta%{?dist}
 Summary:         AMD's proprietary driver for ATI graphic cards
 Group:           User Interface/X Hardware Support
 License:         Redistributable, no modification permitted
@@ -31,7 +31,7 @@ Source13:        blacklist-radeon
 
 BuildRoot:       %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-ExclusiveArch:   x86_64 i386
+ExclusiveArch:   x86_64 i586
 
 Requires:        fglrx-kmod >= %{version}
 Requires(post):  fglrx-kmod >= %{version}
@@ -322,6 +322,9 @@ fi ||:
 %{_includedir}/X11/extensions/*.h
 
 %changelog
+* Sat Apr 04 2009 Thorsten Leemhuis <fedora [AT] leemhuis [DOT] info> - 9.4-0.2.beta
+- s/i386/i586/ in ExclusiveArch for F11
+
 * Sat Mar 28 2009 Stewart Adam <s.adam at diffingo.com> - 9.4-0.1.beta
 - Update to Catalyst 9.4 (beta)
 
