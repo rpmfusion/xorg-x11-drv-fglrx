@@ -8,14 +8,13 @@
 
 Name:            xorg-x11-drv-fglrx
 Version:         9.4
-Release:         0.2.beta%{?dist}
+Release:         0.3.beta%{?dist}
 Summary:         AMD's proprietary driver for ATI graphic cards
 Group:           User Interface/X Hardware Support
 License:         Redistributable, no modification permitted
 URL:             http://www.ati.com/support/drivers/linux/radeon-linux.html
 #Source0:         https://a248.e.akamai.net/f/674/9206/0/www2.ati.com/drivers/linux/ati-driver-installer-9-3-x86.x86_64.run
-# From https://launchpadlibrarian.net/24026289/fglrx-installer_8.600.orig.tar.gz
-Source0:         fglrx-installer_8.600.orig.tar.gz
+Source0:         https://launchpadlibrarian.net/24026289/fglrx-installer_8.600.orig.tar.gz
 Source1:         fglrx-README.Fedora
 Source3:         fglrx-config-display
 Source4:         fglrx-init
@@ -322,6 +321,10 @@ fi ||:
 %{_includedir}/X11/extensions/*.h
 
 %changelog
+* Sat Apr 4 2009 Stewart Adam <s.adam at diffingo.com> - 9.4-0.3.beta
+- Only disable ldconfig when driver is already enabled, always configure
+  xorg.conf even if driver is already enabled
+
 * Sat Apr 04 2009 Thorsten Leemhuis <fedora [AT] leemhuis [DOT] info> - 9.4-0.2.beta
 - s/i386/i586/ in ExclusiveArch for F11
 
