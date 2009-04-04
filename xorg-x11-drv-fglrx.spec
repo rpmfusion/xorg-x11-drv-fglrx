@@ -8,7 +8,7 @@
 
 Name:            xorg-x11-drv-fglrx
 Version:         9.3
-Release:         1%{?dist}
+Release:         2%{?dist}
 Summary:         AMD's proprietary driver for ATI graphic cards
 Group:           User Interface/X Hardware Support
 License:         Redistributable, no modification permitted
@@ -301,6 +301,10 @@ fi ||:
 %{_includedir}/X11/extensions/*.h
 
 %changelog
+* Sat Apr 4 2009 Stewart Adam <s.adam at diffingo.com> - 9.3-2       
+- Only disable ldconfig when driver is already enabled, always configure
+  xorg.conf even if driver is already enabled
+
 * Fri Mar 27 2009 Stewart Adam <s.adam at diffingo.com> - 9.3-1
 - Update to Catalyst 9.3
 
